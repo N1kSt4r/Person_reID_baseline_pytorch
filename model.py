@@ -66,7 +66,8 @@ class ft_net(nn.Module):
 
     def __init__(self, class_num, droprate=0.5, stride=2, circle=False):
         super(ft_net, self).__init__()
-        model_ft = models.resnet50(pretrained=True)
+        # model_ft = models.resnet50(pretrained=True)
+        model_ft = torch.hub.load('facebookresearch/dino:main', 'dino_resnet50')
         # avg pooling to global pooling
         if stride == 1:
             model_ft.layer4[0].downsample[0].stride = (1,1)

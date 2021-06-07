@@ -70,18 +70,22 @@ if len(gpu_ids)>0:
 # ---------
 #
 
+gauss_noise_in = lambda d: lambda tensor: torch.clip(tensor + torch.normal(0, d, size=tensor.shape), 0, 1)
+gauss_noise = lambda d: transforms.Lambda(gauss_noise_in(d))
+
 transform_train_list = [
         #transforms.RandomResizedCrop(size=128, scale=(0.75,1.0), ratio=(0.75,1.3333), interpolation=3), #Image.BICUBIC)
-        transforms.Resize((256,128), interpolation=3),
-        transforms.Pad(10),
-        transforms.RandomCrop((256,128)),
-        transforms.RandomHorizontalFlip(),
+        transforms.Resize(244, interpolation=3),
+        transforms.RandomAffine(degrees=5, scale=(1., 1.1)),
+        transforms.RandomCrop((224, 224)),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0),
         transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+        gauss_noise(0.02),
         ]
 
 transform_val_list = [
-        transforms.Resize(size=(256,128),interpolation=3), #Image.BICUBIC
+        transforms.Resize(224, interpolation=3), #Image.BICUBIC
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]
@@ -100,10 +104,10 @@ if opt.PCB:
         ]
 
 if opt.erasing_p>0:
-    transform_train_list = transform_train_list +  [RandomErasing(probability = opt.erasing_p, mean=[0.0, 0.0, 0.0])]
+    transform_train_list = transform_train_list +  [RandomErasing(probability = opt.erasing_p, sh=0.2, r1=0.4, mean=[0.0, 0.0, 0.0])]
 
 if opt.color_jitter:
-    transform_train_list = [transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0)] + transform_train_list
+    transform_train_list = [transforms.ColorJitter(*([0.2] * 3), hue=0)] + transform_train_list
 
 print(transform_train_list)
 data_transforms = {
@@ -161,7 +165,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     warm_up = 0.1 # We start from the 0.1*lrRate
     warm_iteration = round(dataset_sizes['train']/opt.batchsize)*opt.warm_epoch # first 5 epoch
     if opt.circle:
-        criterion_circle = CircleLoss(m=0.25, gamma=32) # gamma = 64 may lead to a better result.
+        criterion_circle = CircleLoss(m=0.25, gamma=32)
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         print('-' * 10)
