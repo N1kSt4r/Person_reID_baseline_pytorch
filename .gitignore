@@ -29,6 +29,5 @@ core
 *.zip
 *.mat
 *.jpg
-*.npy
 *.pt
 *.pth
