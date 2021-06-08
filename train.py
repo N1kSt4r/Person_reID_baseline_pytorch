@@ -157,6 +157,8 @@ y_err = {}
 y_err['train'] = []
 y_err['val'] = []
 
+from tqdm import tqdm
+
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
@@ -182,7 +184,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             running_loss = 0.0
             running_corrects = 0.0
             # Iterate over data.
-            for data in dataloaders[phase]:
+            for data in tqdm(dataloaders[phase]):
                 # get the inputs
                 inputs, labels = data
                 now_batch_size,c,h,w = inputs.shape
