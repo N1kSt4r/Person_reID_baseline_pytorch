@@ -218,6 +218,13 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                     for i in range(num_part-1):
                         loss += criterion(part[i+1], labels)
 
+                # statistics
+                if int(version[0]) > 0 or int(version[2]) > 3: # for the new version like 0.4.0, 0.5.0 and 1.0.0
+                    running_loss += loss.item() * now_batch_size
+                else:  # for the old version like 0.3.0 and 0.3.1
+                    running_loss += loss.data[0] * now_batch_size
+                running_corrects += float(torch.sum(preds == labels.data))
+
                 # backward + optimize only if in training phase
                 if epoch < opt.warm_epoch and phase == 'train':
                     warm_up = min(1.0, warm_up + 0.9 / warm_iteration)
@@ -230,13 +237,6 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                     else:
                         loss.backward()
                     optimizer.step()
-
-                # statistics
-                if int(version[0]) > 0 or int(version[2]) > 3: # for the new version like 0.4.0, 0.5.0 and 1.0.0
-                    running_loss += loss.item() * now_batch_size
-                else:  # for the old version like 0.3.0 and 0.3.1
-                    running_loss += loss.data[0] * now_batch_size
-                running_corrects += float(torch.sum(preds == labels.data))
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects / dataset_sizes[phase]
