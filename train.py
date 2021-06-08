@@ -364,7 +364,7 @@ else:
              {'params': model.classifier5.parameters(), 'lr': opt.lr},
              #{'params': model.classifier6.parameters(), 'lr': 0.01},
              #{'params': model.classifier7.parameters(), 'lr': 0.01}
-         ], weight_decay=5e-4, momentum=0.9, nesterov=True)
+         ], weight_decay=5e-3, momentum=0.9, nesterov=True)
 
 # Decay LR by a factor of 0.1 every 40 epochs
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=40, gamma=0.1)

@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-UNDIST_COORDS = np.load('/home/ntsuranov/mac/ReID/LensFunUndistCoords_224.npy')
+UNDIST_COORDS = np.load('./LensFunUndistCoords_224.npy')
 output_path = '../car_market'
 path = '../dataset'
 to_delete = []
