@@ -8,6 +8,11 @@ output_path = '../car_market'
 path = '../dataset'
 to_delete = []
 counter = 0
+camera_dict = {
+    'OrderWindow2': 'c1',
+    'PayWindow': 'c2',
+    'PickupWindow': 'c3'
+}
 
 
 def read_img(path):
@@ -30,16 +35,16 @@ def save_dir(path):
     global counter
     is_test = np.random.rand() < 0.1
 
-    prefix = 'test' if is_test else 'train'
+    prefix = f"bounding_box_{'test' if is_test else 'train'}"
     prefix = os.path.join(output_path, prefix)
     prefix_q = os.path.join(output_path, 'query')
-    prefix_mq = os.path.join(output_path, 'mquery')
+    prefix_mq = os.path.join(output_path, 'gt_bbox')
     files = os.listdir(path)
     np.random.shuffle(files)
 
     for num, frame in enumerate(files):
         image = transform(read_img(os.path.join(path, frame)))
-        image_name = '%06d_%03d.jpg' % (counter, num)
+        image_name = '%06d_%s_%03d.jpg' % (counter, camera_dict[frame.split('_')[0]], num)
         save_img(image, os.path.join(prefix, image_name))
 
         if is_test:

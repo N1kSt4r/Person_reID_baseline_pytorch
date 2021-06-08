@@ -74,47 +74,29 @@ gauss_noise_in = lambda d: lambda tensor: torch.clip(tensor + torch.normal(0, d,
 gauss_noise = lambda d: transforms.Lambda(gauss_noise_in(d))
 
 transform_train_list = [
-        #transforms.RandomResizedCrop(size=128, scale=(0.75,1.0), ratio=(0.75,1.3333), interpolation=3), #Image.BICUBIC)
-        transforms.Resize(244, interpolation=3),
-        transforms.RandomAffine(degrees=5, scale=(1., 1.1)),
-        transforms.RandomCrop((224, 224)),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-        gauss_noise(0.02),
-        ]
+    transforms.RandomAffine(degrees=5),
+    transforms.RandomResizedCrop(size=224, scale=(0.75,1.1), ratio=(0.75,1.3333), interpolation=3),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+    gauss_noise(0.02),
+    ]
 
 transform_val_list = [
-        transforms.Resize(224, interpolation=3), #Image.BICUBIC
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]
+    transforms.Resize(224, interpolation=3), #Image.BICUBIC
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]
 
-if opt.PCB:
-    transform_train_list = [
-        transforms.Resize((384,192), interpolation=3),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]
-    transform_val_list = [
-        transforms.Resize(size=(384,192),interpolation=3), #Image.BICUBIC
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]
-
-if opt.erasing_p>0:
-    transform_train_list = transform_train_list +  [RandomErasing(probability = opt.erasing_p, sh=0.2, r1=0.4, mean=[0.0, 0.0, 0.0])]
-
-if opt.color_jitter:
-    transform_train_list = [transforms.ColorJitter(*([0.2] * 3), hue=0)] + transform_train_list
+if opt.erasing_p > 0:
+    transform_train_list = transform_train_list + \
+                           [RandomErasing(probability=opt.erasing_p, sh=0.2, r1=0.4, mean=[0.0, 0.0, 0.0])]
 
 print(transform_train_list)
 data_transforms = {
     'train': transforms.Compose( transform_train_list ),
     'val': transforms.Compose(transform_val_list),
 }
-
 
 train_all = ''
 if opt.train_all:
@@ -127,8 +109,8 @@ image_datasets['val'] = datasets.ImageFolder(os.path.join(data_dir, 'val'),
                                           data_transforms['val'])
 
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=opt.batchsize,
-                                             shuffle=True, num_workers=8, pin_memory=True) # 8 workers may work faster
-              for x in ['train', 'val']}
+                                             shuffle=True, num_workers=16, pin_memory=True) # 8 workers may work faster
+               for x in ['train', 'val']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 class_names = image_datasets['train'].classes
 
@@ -136,7 +118,7 @@ use_gpu = torch.cuda.is_available()
 
 since = time.time()
 inputs, classes = next(iter(dataloaders['train']))
-print(time.time()-since)
+print(time.time() - since)
 ######################################################################
 # Training the model
 # ------------------
