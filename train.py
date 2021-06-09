@@ -324,6 +324,7 @@ def global_train(model=None, num_epochs=60):
             {'params': model.classifier.parameters(), 'lr': opt.lr}
         ], weight_decay=5e-4, momentum=0.9, nesterov=True)
     else:
+        model = ft_net(len(class_names), opt.droprate, opt.stride, circle =opt.circle)
         flag = True
         for name, param in model.named_parameters():
             if 'layer4' in name:
