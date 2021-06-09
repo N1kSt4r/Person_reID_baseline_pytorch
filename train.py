@@ -311,7 +311,7 @@ def save_network(network, epoch_label):
 def global_train(model=None, num_epochs=60):
     opt.nclasses = len(class_names)
 
-    if model is None:
+    if model is None and False:
         model = ft_net(len(class_names), opt.droprate, opt.stride, circle =opt.circle)
 
         flag = False
@@ -322,9 +322,9 @@ def global_train(model=None, num_epochs=60):
 
         optimizer_ft = optim.SGD([
             {'params': model.classifier.parameters(), 'lr': opt.lr}
-        ], weight_decay=5e-2, momentum=0.9, nesterov=True)
+        ], weight_decay=5e-4, momentum=0.9, nesterov=True)
     else:
-        flag = False
+        flag = True
         for name, param in model.named_parameters():
             if 'layer4' in name:
                 flag = True
@@ -336,7 +336,7 @@ def global_train(model=None, num_epochs=60):
         optimizer_ft = optim.SGD([
             {'params': base_params, 'lr': 0.1 * opt.lr},
             {'params': model.classifier.parameters(), 'lr': opt.lr}
-        ], weight_decay=5e-2, momentum=0.9, nesterov=True)
+        ], weight_decay=5e-4, momentum=0.9, nesterov=True)
 
     print(model)
 
@@ -373,5 +373,4 @@ def global_train(model=None, num_epochs=60):
                        num_epochs=num_epochs)
 
 
-model = global_train(model=None, num_epochs=20)
-model = global_train(model, num_epochs=60)
+model = global_train(model=None, num_epochs=60)
