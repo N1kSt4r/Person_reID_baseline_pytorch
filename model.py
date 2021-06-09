@@ -49,7 +49,7 @@ class ClassBlock(nn.Module):
         classifier = []
         classifier += [nn.Linear(num_bottleneck, class_num)]
         classifier = nn.Sequential(*classifier)
-        classifier.apply(weights_init_classifier)
+        # classifier.apply(weights_init_classifier)
 
         self.add_block = add_block
         self.classifier = classifier
