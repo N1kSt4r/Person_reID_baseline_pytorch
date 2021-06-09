@@ -313,17 +313,30 @@ def global_train(model=None, num_epochs=60):
 
     if model is None:
         model = ft_net(len(class_names), opt.droprate, opt.stride, circle =opt.circle)
+
+        flag = False
+        for name, param in model.named_parameters():
+            if name.startswith('classifier'):
+                flag = True
+            param.requires_grad = flag
+
         optimizer_ft = optim.SGD([
             {'params': model.classifier.parameters(), 'lr': opt.lr}
-        ], weight_decay=5e-3, momentum=0.9, nesterov=True)
+        ], weight_decay=5e-2, momentum=0.9, nesterov=True)
     else:
+        flag = False
+        for name, param in model.named_parameters():
+            if name.startswith('layer4'):
+                flag = True
+            param.requires_grad = flag
+
         ignored_params = list(map(id, model.classifier.parameters()))
         parameters = [p for p in model.parameters() if p.requires_grad]
         base_params = filter(lambda p: id(p) not in ignored_params, parameters)
         optimizer_ft = optim.SGD([
             {'params': base_params, 'lr': 0.1 * opt.lr},
             {'params': model.classifier.parameters(), 'lr': opt.lr}
-        ], weight_decay=5e-3, momentum=0.9, nesterov=True)
+        ], weight_decay=5e-2, momentum=0.9, nesterov=True)
 
     print(model)
 
@@ -360,5 +373,5 @@ def global_train(model=None, num_epochs=60):
                        num_epochs=num_epochs)
 
 
-model = global_train(model=None, num_epochs=10)
+model = global_train(model=None, num_epochs=20)
 model = global_train(model, num_epochs=60)
