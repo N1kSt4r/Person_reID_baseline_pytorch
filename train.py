@@ -316,7 +316,7 @@ def global_train(model=None, num_epochs=60):
 
         flag = False
         for name, param in model.named_parameters():
-            if name.startswith('classifier'):
+            if 'classifier' in name:
                 flag = True
             param.requires_grad = flag
 
@@ -326,7 +326,7 @@ def global_train(model=None, num_epochs=60):
     else:
         flag = False
         for name, param in model.named_parameters():
-            if name.startswith('layer4'):
+            if 'layer4' in name:
                 flag = True
             param.requires_grad = flag
 
