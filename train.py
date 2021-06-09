@@ -328,7 +328,7 @@ def global_train(model=None, num_epochs=60):
     print(model)
 
     # Decay LR by a factor of 0.1 every 40 epochs
-    exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=opt.lr / 20)
+    exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.8)
 
     ######################################################################
     # Train and evaluate
